@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Navigation</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 50px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            max-width: 500px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+        }
+        .output {
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Enter Your 6-Digit Code</h2>
+    <input type="text" id="codeInput" placeholder="e.g., 015038">
+    <button onclick="getNextCoordinates()">Submit</button>
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+    function getNextCoordinates() {
+        const questionCodes = {
+            1: 3742,
+            2: 8169,
+            3: 2905,
+            4: 6471,
+            5: 5038,
+            6: 7294,
+            7: 1806,
+            8: 9532,
+            9: 4087,
+            10: 6129,
+            11: 3748,
+            12: 5902,
+            13: 8251,
+            14: 4937,
+            15: 1065,
+            16: 7489,
+            17: 2541,
+            18: 6390,
+            19: 4718,
+            20: 8023
+        };
+
+        const teamSequences = {
+            1: [5,13,12,10,7,8,14,3,2,17,11,18,20,4,1,6,9,16,15,19],
+            2: [15,11,13,9,7,5,19,3,17,8,4,6,16,14,20,12,2,10,1,18],
+            3: [16,9,4,6,1,18,10,5,12,11,14,20,3,15,2,13,17,8,7,19],
+            4: [19,8,6,20,4,3,11,16,9,14,1,13,18,10,7,5,15,17,12,2],
+            5: [19,13,11,2,12,15,14,8,17,16,1,4,18,3,7,6,5,9,10,20],
+            6: [10,4,12,5,9,1,18,3,19,20,17,15,14,7,16,8,11,13,6,2],
+            7: [16,7,1,19,20,6,17,10,18,9,12,15,4,5,11,13,3,14,8,2],
+            8: [10,6,8,9,1,13,16,17,20,18,12,2,4,19,5,7,3,15,11,14],
+            9: [5,13,6,1,11,16,7,15,12,18,20,4,2,3,10,17,9,8,14,19],
+            10:[2,4,3,6,1,15,18,14,13,8,9,20,5,19,10,17,16,11,7,12],
+            11:[1,14,20,11,9,16,4,3,15,10,7,5,13,12,8,6,19,18,2,17],
+            12:[13,7,20,18,1,4,9,6,17,2,16,5,10,3,19,11,15,12,14,8],
+            13:[19,20,13,9,3,7,17,10,14,18,11,12,5,2,4,8,16,6,1,15],
+            14:[17,19,5,11,10,16,1,20,7,15,14,9,18,2,12,3,8,13,4,6],
+            15:[8,7,14,6,13,18,1,12,2,10,5,20,19,11,4,16,9,3,17,15],
+            16:[16,19,11,13,4,20,17,8,14,15,9,7,1,6,12,10,2,18,3,5],
+            17:[10,18,5,20,9,12,4,19,13,7,2,1,11,3,15,14,17,6,16,8],
+            18:[4,15,7,18,11,14,12,13,8,20,3,5,10,6,19,17,16,1,9,2],
+            19:[9,20,12,3,10,8,11,16,7,19,14,1,4,15,2,17,5,13,18,6],
+            20:[10,15,12,8,20,5,18,3,9,4,1,14,6,2,17,13,19,16,7,11]
+        };
+
+        const input = document.getElementById('codeInput').value.trim();
+        const outputDiv = document.getElementById('output');
+
+        // Input validation
+        if (!/^\d{6}$/.test(input)) {
+            outputDiv.textContent = "Please enter a valid 6-digit code.";
+            return;
+        }
+
+        const teamNumber = parseInt(input.slice(0, 2), 10);
+        const currentQuestionCode = parseInt(input.slice(2), 10);
+
+        if (!teamSequences[teamNumber]) {
+            outputDiv.textContent = "Invalid team number.";
+            return;
+        }
+
+        // Reverse lookup to find the current question number
+        let currentQuestionNumber = null;
+        for (const [qNum, qCode] of Object.entries(questionCodes)) {
+            if (qCode === currentQuestionCode) {
+                currentQuestionNumber = parseInt(qNum, 10);
+                break;
+            }
+        }
+
+        if (!currentQuestionNumber) {
+            outputDiv.textContent = "Invalid question code.";
+            return;
+        }
+
+        const sequence = teamSequences[teamNumber];
+        const currentIndex = sequence.indexOf(currentQuestionNumber);
+
+        if (currentIndex === -1) {
+            outputDiv.textContent = "Current question not found in team's sequence.";
+            return;
+        }
+
+        let nextQuestionNumber = null;
+        if (currentIndex + 1 < sequence.length) {
+            nextQuestionNumber = sequence[currentIndex + 1];
+            outputDiv.textContent = `The coordinates of your next question are: (${nextQuestionNumber}, ${nextQuestionNumber})`;
+        } else {
+            outputDiv.textContent = "You have completed all questions!";
+        }
+    }
+</script>
+
+</body>
+</html>
